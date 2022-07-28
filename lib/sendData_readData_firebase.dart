@@ -38,7 +38,7 @@ class _SendDataFirebaseState extends State<SendDataFirebase> {
     dynamic resultant = await getUsersList();
 
     if (resultant == null) {
-      print('Unable to retrieve');
+      log('Unable to retrieve');
     } else {
       setState(() {
         userProfilesList = resultant;
@@ -46,7 +46,21 @@ class _SendDataFirebaseState extends State<SendDataFirebase> {
     }
   }
 
- Future<void> sendData ()async {
+  sortByDate() async {
+    dynamic resultants = await getDateBy();
+
+    if (resultants == null) {
+      log('Unable to retrieve');
+    } else {
+      setState(() {
+        userProfilesList = resultants;
+      });
+    }
+  }
+
+
+
+  Future<void> sendData ()async {
     return users.add({
       'age':ageController.text,
       'name':nameController.text.toString(),
@@ -55,6 +69,27 @@ class _SendDataFirebaseState extends State<SendDataFirebase> {
     .then((value) => log('added Successfully'))
     .catchError((error)=> log('add failed $error'));
   }
+  Future getDateBy() async {
+    List  getDateBy = [];
+    try {
+      await  FirebaseFirestore.instance
+          .collection('users')
+          .orderBy('date', descending: false )
+          .get().then((querySnapshot) {
+        for (var element in querySnapshot.docs) {
+          getDateBy.add(element.data());
+        }
+        log(' itemList : ${ getDateBy.length.toString()}');
+      });
+      return getDateBy;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+
+
+  }
+
   Future getUsersList() async {
     List itemsList = [];
 
@@ -107,6 +142,23 @@ class _SendDataFirebaseState extends State<SendDataFirebase> {
                 ),
                 const SizedBox(height: 20,),
                 ElevatedButton(onPressed:()async{
+
+                  // Update'''->
+
+                  // FirebaseFirestore.instance
+                  //     .collection('users')
+                  //     .get()
+                  //     .then(
+                  //       (value) => value.docs.forEach(
+                  //         (element) {
+                  //       var docRef = FirebaseFirestore.instance
+                  //           .collection('users')
+                  //           .doc(element.id);
+                  //
+                  //       docRef.update({'date': DateTime.now()});
+                  //     },
+                  //   ),
+                  // );
                  await sendData();
                   await fetchDatabaseList();
                   setState((){});
@@ -115,17 +167,27 @@ class _SendDataFirebaseState extends State<SendDataFirebase> {
                   numberController.clear();
                   } , child:const  Text('Submit')),
                 const SizedBox(height: 20,),
-                TextFormField(
-                  onChanged: (value){
-                    setState((){
-                      name=value;
-                    });
-                  },
-                  decoration:const  InputDecoration(
-                      hintText: 'search',
-                    prefixIcon: Icon(Icons.search)
-                          
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        onChanged: (value){
+                          setState((){
+                            name=value;
+                          });
+                        },
+                        decoration:const  InputDecoration(
+                            hintText: 'search',
+                          prefixIcon: Icon(Icons.search)
+
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(onPressed:()async{
+                      sortByDate();
+
+                    } , child:const  Text('Short by date')),
+                  ],
                 ),
               SizedBox(
                 height: 500,
@@ -153,6 +215,30 @@ class _SendDataFirebaseState extends State<SendDataFirebase> {
         ),
       );
     }
+                      if (userProfilesList[index]['age'].toString()
+                          .toString()
+                          .toLowerCase()
+                          .startsWith(name.toLowerCase())) {
+                        return Card(
+                          child: ListTile(
+                            title: Text(userProfilesList[index]['name'].toString()),
+                            subtitle: Text(userProfilesList[index]['age'].toString()),
+                            trailing: Text('${userProfilesList[index]['number'].toString()}'),
+                          ),
+                        );
+                      }
+                      if (userProfilesList[index]['number'].toString()
+                          .toString()
+                          .toLowerCase()
+                          .startsWith(name.toLowerCase())) {
+                        return Card(
+                          child: ListTile(
+                            title: Text(userProfilesList[index]['name'].toString()),
+                            subtitle: Text(userProfilesList[index]['age'].toString()),
+                            trailing: Text('${userProfilesList[index]['number'].toString()}'),
+                          ),
+                        );
+                      }
     return Container();
 
                     }),
