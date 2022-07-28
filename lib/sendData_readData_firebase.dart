@@ -25,8 +25,9 @@ class _SendDataFirebaseState extends State<SendDataFirebase> {
     fetchDatabaseList();
   }
   List userProfilesList = [];
-
   String userID = "";
+
+  String name = "";
 
   fetchUserInfo() async {
     dynamic getUser = FirebaseAuth.instance.currentUser;
@@ -75,56 +76,89 @@ class _SendDataFirebaseState extends State<SendDataFirebase> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding:const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextFormField(
-                controller: nameController,
-                decoration:const  InputDecoration(
-                  hintText: 'Enter your name'
+        child: SingleChildScrollView(
+          child: Padding(
+            padding:const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextFormField(
+                  controller: nameController,
+                  decoration:const  InputDecoration(
+                    hintText: 'Enter your name'
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20,),
-              TextFormField(
-                controller: ageController,
-                decoration:const  InputDecoration(
-                    hintText: 'Enter your age'
+                const SizedBox(height: 20,),
+                TextFormField(
+                  controller: ageController,
+                  keyboardType: TextInputType.number,
+                  decoration:const  InputDecoration(
+                      hintText: 'Enter your age'
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20,),
-              TextFormField(
-                controller: numberController,
-                decoration:const  InputDecoration(
-                    hintText: 'Enter your number'
+                const SizedBox(height: 20,),
+                TextFormField(
+                  controller: numberController,
+                  keyboardType: TextInputType.number,
+                  decoration:const  InputDecoration(
+                      hintText: 'Enter your number'
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20,),
-              ElevatedButton(onPressed:(){
-                getUsersList();
-                // sendData();
-                ageController.clear();
-                nameController.clear();
-                numberController.clear();
-                } , child:const  Text('Submit')),
+                const SizedBox(height: 20,),
+                ElevatedButton(onPressed:()async{
+                 await sendData();
+                  await fetchDatabaseList();
+                  setState((){});
+                  ageController.clear();
+                  nameController.clear();
+                  numberController.clear();
+                  } , child:const  Text('Submit')),
+                const SizedBox(height: 20,),
+                TextFormField(
+                  onChanged: (value){
+                    setState((){
+                      name=value;
+                    });
+                  },
+                  decoration:const  InputDecoration(
+                      hintText: 'search',
+                    prefixIcon: Icon(Icons.search)
+                          
+                  ),
+                ),
+              SizedBox(
+                height: 500,
+                child: ListView.builder(
+                    itemCount: userProfilesList.length,
+                    itemBuilder: (context, index) {
+                      if (name.isEmpty){
+                        return Card(
+                          child: ListTile(
+                            title: Text(userProfilesList[index]['name'].toString()),
+                            subtitle: Text(userProfilesList[index]['age'].toString()),
+                            trailing: Text('${userProfilesList[index]['number'].toString()}'),
+                          ),
+                        );
+                      }
+    if (userProfilesList[index]['name'].toString()
+        .toString()
+        .toLowerCase()
+        .startsWith(name.toLowerCase())) {
+      return Card(
+        child: ListTile(
+          title: Text(userProfilesList[index]['name'].toString()),
+          subtitle: Text(userProfilesList[index]['age'].toString()),
+          trailing: Text('${userProfilesList[index]['number'].toString()}'),
+        ),
+      );
+    }
+    return Container();
 
-            SizedBox(
-              height: 500,
-              child: ListView.builder(
-                  itemCount: userProfilesList.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: ListTile(
-                        title: Text(userProfilesList[index]['name'].toString()),
-                        subtitle: Text(userProfilesList[index]['age'].toString()),
-                        trailing: Text('${userProfilesList[index]['number'].toString()}'),
-                      ),
-                    );
-                  }),
-            )]
+                    }),
+              )]
 
+            ),
           ),
         ),
       ),
