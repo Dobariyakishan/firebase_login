@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_login/image_storge_service.dart';
+import 'package:firebase_login/firebase_functions/image_storge_service.dart';
 import 'package:flutter/material.dart';
 
 class SendImageFetchImage extends StatefulWidget {

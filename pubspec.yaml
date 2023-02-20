@@ -39,6 +39,8 @@ dependencies:
   cloud_firestore: ^3.4.1
   firebase_storage: ^10.3.3
   file_picker: ^5.0.0
+  # google signing
+  google_sign_in: ^5.4.0
   sms_autofill: ^2.2.0
   sms_otp_auto_verify: ^2.1.0
   flutter_sms_inbox: ^1.0.1

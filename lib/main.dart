@@ -1,11 +1,8 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_login/sendImage_fetchImage.dart';
-import 'package:firebase_login/sendData_readData_firebase.dart';
+import 'package:firebase_login/firebase_functions/google_authentication.dart';
 import 'package:flutter/material.dart';
-import 'package:sms_otp_auto_verify/sms_otp_auto_verify.dart';
 
 
  Future <void> main() async{
@@ -25,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const SendDataFirebase(),
+      home:  GoogleAuthentication(),
     );
   }
 }
